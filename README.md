@@ -1,150 +1,31 @@
-package main
+# Site Monitor
 
-import (
-	"bufio"
-	"fmt"
-	"io"
-	"io/ioutil"
-	"net/http"
-	"os"
-	"strconv"
-	"strings"
-	"time"
-)
+## Sobre o Projeto
+Site Monitor é um programa em Golang que realiza monitoramentos periódicos em uma lista de sites e registra os resultados em um arquivo de log. Ele verifica se os sites estão acessíveis e registra o status de cada um.
 
-const monitoramentos = 3
-const delay = 5
+## Funcionalidades
+- **Monitoramento de Sites**: Testa a acessibilidade de uma lista de sites e registra o status online/offline.
+- **Logs de Monitoramento**: Registra os resultados dos testes em um arquivo de log com data e hora.
+- **Interface de Usuário**: Fornece um menu interativo para iniciar o monitoramento, exibir logs e sair do programa.
 
-func main() {
+## Como Usar
+1. Clone o repositório para o seu ambiente local.
+2. Compile o programa com o comando `go build`.
+3. Execute o binário gerado para iniciar o programa.
+4. Siga as instruções exibidas no menu interativo.
 
-	exibeIntroducao()
+## Requisitos
+- Golang 1.15 ou superior
 
-	for {
-		exibeMenu()
+## Contribuições
+Contribuições são sempre bem-vindas! Sinta-se à vontade para abrir um pull request ou criar uma issue.
 
-		comando := leComando()
+## Licença
+Distribuído sob a licença MIT. Veja `LICENSE` para mais informações.
 
-		switch comando {
-		case 1:
-			iniciarMonitoramento()
-		case 2:
-			fmt.Println("Exibindo Logs...")
-			imprimeLogs()
-		case 0:
-			fmt.Println("Saindo do programa")
-			os.Exit(0)
-		default:
-			fmt.Println("Não conheço este comando")
-			os.Exit(-1)
-		}
-	}
+## Autor
+- Gustavo - *Desenvolvedor inicial*
 
-}
-
-func exibeIntroducao() {
-	nome := "Gustavo"
-	versao := 1.1
-	fmt.Println("Olá, sr.", nome)
-	fmt.Println("Este programa está na versão", versao)
-}
-
-func exibeMenu() {
-	fmt.Println("1- Iniciar Monitoramento")
-	fmt.Println("2- Exibir logs")
-	fmt.Println("0- Sair do programa")
-}
-
-func leComando() int {
-	var comandoLido int
-	fmt.Scan(&comandoLido)
-	fmt.Println("O comando escolhido foi", comandoLido)
-	fmt.Println("")
-
-	return comandoLido
-}
-
-func iniciarMonitoramento() {
-	fmt.Println("Monitorando...")
-
-	sites := []string{"https://random-status-code.herokuapp.com/", "https://www.alura.com.br", "https://www.caelum.com.br"}
-
-	for i := 0; i < monitoramentos; i++ {
-		for i, site := range sites {
-			fmt.Println("Testando site", i, ":", site)
-			testaSite(site)
-		}
-		time.Sleep(delay * time.Second)
-		fmt.Println("")
-
-	}
-
-	fmt.Println("")
-}
-
-func testaSite(site string) {
-	resp, err := http.Get(site)
-
-	if err != nil {
-		fmt.Println("Ocorreu um erro:", err)
-	}
-
-	if resp.StatusCode == 200 {
-		fmt.Println("Site:", site, "Foi carregado com sucesso!")
-		registraLog(site, true)
-		fmt.Println("Site:", site, "esta com problema. Status Code:",
-			resp.StatusCode)
-		registraLog(site, false)
-	}
-}
-
-func leSitesDoArquivo() []string {
-
-	var sites []string
-
-	arquivo, err := os.Open("sites.txt")
-
-	if err != nil {
-		fmt.Println("Ocorreu um erro:", err)
-	}
-
-	leitor := bufio.NewReader(arquivo)
-	for {
-		linha, err := leitor.ReadString('\n')
-		linha = strings.TrimSpace(linha)
-
-		sites = append(sites, linha)
-
-		if err == io.EOF {
-			break
-		}
-
-	}
-
-	arquivo.Close()
-	return sites
-}
-
-func registraLog(site string, status bool) {
-
-	arquivo, err := os.OpenFile("log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	arquivo.WriteString(time.Now().Format("2006-01-02 15:04:05") + " - " + site + " - online: " + strconv.FormatBool(status) + "\n")
-
-	arquivo.Close()
-}
-
-func imprimeLogs() {
-
-	arquivo, err := ioutil.ReadFile("log.txt")
-
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	fmt.Println(string(arquivo))
-
-}
+## Agradecimentos
+- Alura - Por fornecer recursos educacionais.
+- Caelum - Por inspirar este projeto.
